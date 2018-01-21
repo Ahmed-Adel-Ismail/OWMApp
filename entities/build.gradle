@@ -1,0 +1,10 @@
+apply plugin: 'java-library'
+group = 'com.github.Ahmed-Adel-Ismail'
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'com.google.code.gson:gson:2.8.0'
+}
+
+sourceCompatibility = "1.7"
+targetCompatibility = "1.7"
