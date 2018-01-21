@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+group = 'com.github.Ahmed-Adel-Ismail'
 
 android {
     compileSdkVersion 26

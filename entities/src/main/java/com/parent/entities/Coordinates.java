@@ -5,13 +5,21 @@ import com.google.gson.annotations.SerializedName;
 public class Coordinates {
 
     @SerializedName("lat")
-    public final Double latitude;
+    private final Double latitude;
     @SerializedName("lon")
-    public final Double longitude;
+    private final Double longitude;
 
     public Coordinates(Double latitude, Double longitude) {
         this.latitude = latitude;
         this.longitude = longitude;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
     }
 
     @Override
