@@ -9,6 +9,7 @@ android {
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -16,6 +17,11 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 
@@ -26,5 +32,13 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+
     implementation project(':domain')
+    implementation 'com.github.Ahmed-Adel-Ismail:J-Chain:0.1.1'
+    implementation 'com.github.Ahmed-Adel-Ismail:J-Curry:0.0.5'
+    implementation 'io.reactivex.rxjava2:rxjava:2.1.8'
+    implementation 'io.reactivex.rxjava2:rxandroid:2.0.1'
+    implementation 'com.github.Ahmed-Adel-Ismail.CommandsMap:CommandMaps:0.0.4'
+    annotationProcessor 'com.github.Ahmed-Adel-Ismail.CommandsMap:CommandMapsCompiler:0.0.4'
+
 }
