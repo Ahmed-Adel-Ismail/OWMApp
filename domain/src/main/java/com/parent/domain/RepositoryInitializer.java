@@ -14,8 +14,7 @@ class RepositoryInitializer implements Action {
     public void run() {
         Chain.let(openWeatherMapsApi())
                 .map(Repository::new)
-                .apply(ActorSystem::register)
-                .call();
+                .apply(ActorSystem::register);
     }
 
     private OpenWeatherMapsApi openWeatherMapsApi() {
