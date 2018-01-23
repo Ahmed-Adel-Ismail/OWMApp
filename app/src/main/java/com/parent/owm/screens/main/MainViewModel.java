@@ -10,11 +10,13 @@ import com.actors.ActorSystem;
 import com.actors.Message;
 import com.annotations.Command;
 import com.annotations.CommandsMapFactory;
+import com.chaining.Chain;
 import com.chaining.Optional;
 import com.functional.curry.Curry;
 import com.functional.curry.SwapCurry;
 import com.mapper.CommandsMap;
 import com.parent.domain.Domain;
+import com.parent.domain.FavoriteCities;
 import com.parent.domain.Repository;
 import com.parent.entities.City;
 import com.vodafone.binding.annotations.SubscriptionName;
@@ -22,8 +24,8 @@ import com.vodafone.binding.annotations.SubscriptionName;
 import org.javatuples.Pair;
 
 import java.util.LinkedList;
-import java.util.List;
 
+import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
@@ -43,8 +45,8 @@ public class MainViewModel extends ViewModel implements Actor {
     final PublishSubject<Boolean> searchForCity = PublishSubject.create();
     @SubscriptionName("searchForCityFailure")
     final PublishSubject<Boolean> searchForCityFailure = PublishSubject.create();
-    @SubscriptionName("savedCities")
-    final BehaviorSubject<LinkedList<City>> savedCities = BehaviorSubject.createDefault(new LinkedList<>());
+    @SubscriptionName("favoriteCities")
+    final BehaviorSubject<LinkedList<City>> favoriteCities = BehaviorSubject.createDefault(new LinkedList<>());
 
 
     private final CommandsMap commandsMap = CommandsMap.of(this);
@@ -59,7 +61,17 @@ public class MainViewModel extends ViewModel implements Actor {
     MainViewModel(Scheduler scheduler) {
         this.scheduler = scheduler;
         ActorSystem.register(this);
+        loadFavoriteCities();
         sendRepositoryMessageAndShowProgressOnSearchForCity();
+    }
+
+    private void loadFavoriteCities() {
+        FavoriteCities.load()
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .doOnError(Throwable::printStackTrace)
+                .onErrorReturnItem(new LinkedList<>())
+                .subscribe(favoriteCities::onNext);
     }
 
     private void sendRepositoryMessageAndShowProgressOnSearchForCity() {
@@ -75,16 +87,31 @@ public class MainViewModel extends ViewModel implements Actor {
                 .subscribe(searchCityInProgress::onNext);
     }
 
-    @SuppressWarnings("Convert2MethodRef")
     @Command(MSG_SEARCH_FOR_CITY_RESULT)
     void onSearchForCityResult(Optional<City> foundCity) {
-        searchCityInProgress.onNext(false);
-        foundCity.apply(savedCities.getValue()::addFirst)
-                .to(savedCities.getValue())
-                .apply(savedCities::onNext)
-                .defaultIfEmpty(new LinkedList<>())
-                .when(List::isEmpty)
-                .invoke(() -> searchForCityFailure.onNext(true));
+        foundCity.map(this::addNewFavoriteCityAndSaveToPreferences)
+                .defaultIfEmpty(false)
+                .whenNot(Boolean::booleanValue)
+                .then(searchForCityFailure::onNext)
+                .invoke(() -> searchCityInProgress.onNext(false));
+    }
+
+    private boolean addNewFavoriteCityAndSaveToPreferences(City city) {
+        Chain.let(favoriteCities.getValue())
+                .apply(list -> list.addFirst(city))
+                .flatMap(Observable::fromIterable)
+                .distinct(City::getId)
+                .take(5)
+                .toList(LinkedList::new)
+                .map(Chain::let)
+                .blockingGet()
+                .apply(favoriteCities::onNext)
+                .flatMap(FavoriteCities::save)
+                .subscribeOn(Schedulers.io())
+                .observeOn(Schedulers.io())
+                .subscribe();
+        return true;
+
     }
 
     @Override
@@ -102,7 +129,8 @@ public class MainViewModel extends ViewModel implements Actor {
         searchCityText.onComplete();
         searchCityInProgress.onComplete();
         searchForCity.onComplete();
-        savedCities.onComplete();
+        searchForCityFailure.onComplete();
+        favoriteCities.onComplete();
         ActorSystem.unregister(this);
     }
 

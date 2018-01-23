@@ -94,15 +94,16 @@ public class MainActivity extends AppCompatActivity implements Actor {
 
     @SubscribeTo("searchCityText")
     Disposable onSearchCityTextChanged(BehaviorSubject<String> searchCityText) {
+        searchTextView.setText(searchCityText.getValue());
         return RxTextView.textChanges(searchTextView)
                 .map(Object::toString)
                 .onErrorResumeNext(Observable.just(""))
                 .subscribe(searchCityText::onNext);
     }
 
-    @SubscribeTo("savedCities")
-    void onSavedCitiesChanged(BehaviorSubject<LinkedList<City>> savedCities) {
-        savedCities.share()
+    @SubscribeTo("favoriteCities")
+    void onSavedCitiesChanged(BehaviorSubject<LinkedList<City>> favoriteCities) {
+        favoriteCities.share()
                 .map(List::toString)
                 .subscribe(Curry.toConsumer(Log::e, "MainActivity"));
 
