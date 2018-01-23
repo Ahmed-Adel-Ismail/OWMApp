@@ -10,16 +10,16 @@ import org.junit.Test;
 import io.reactivex.Observable;
 
 
-public class OpenWeatherMapsApiTest {
+public class OnRequesterTestFiveDayForecast {
 
     @Test
-    public void requestFiveDayForecastFromTestDoubleThenReturnValidForecastResponse() {
-        Chain.let(new MockOpenWeatherMapApi())
-                .map(OpenWeatherMapsApi::requestFiveDayForecast)
+    public void applyFromTestDoubleThenReturnValidForecastResponse() {
+        Chain.let(new MockFiveDayForecastRequester())
+                .map(api -> api.apply(0L))
                 .map(Observable::blockingFirst)
                 .map(ForecastsResponse::getCity)
                 .map(City::getName)
-                .map(MockOpenWeatherMapApi.MOCK_RESPONSE_CITY_NAME::equals)
+                .map(MockFiveDayForecastRequester.MOCK_RESPONSE_CITY_NAME::equals)
                 .apply(Assert::assertTrue);
     }
 

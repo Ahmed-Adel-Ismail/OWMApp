@@ -1,22 +1,22 @@
 package com.parent.domain;
 
 import android.app.Application;
-import android.content.Context;
 import android.support.annotation.NonNull;
 
 import com.actors.ActorLite;
 import com.chaining.Chain;
 import com.chaining.Optional;
+import com.functional.curry.Curry;
 
 import java.lang.ref.WeakReference;
-
-import io.reactivex.functions.Action;
 
 public class Domain {
 
     public static final int MSG_REQUEST_FIVE_DAY_FORECAST = 0x201;
     public static final int MSG_REQUEST_FIVE_DAY_FORECAST_SUCCESS = 0x202;
     public static final int MSG_REQUEST_FIVE_DAY_FORECAST_FAILURE = 0x203;
+    public static final int MSG_SEARCH_FOR_CITY = 0x204;
+    public static final int MSG_SEARCH_FOR_CITY_RESULT = 0x205;
 
     private static WeakReference<Application> applicationWeakReference;
 
@@ -26,11 +26,11 @@ public class Domain {
                 .apply(ActorLite::with)
                 .map(WeakReference::new)
                 .apply(Domain::setApplicationWeakReference)
-                .to(new RepositoryInitializer())
-                .apply(Action::run);
+                .map(WeakReference::get)
+                .apply(Curry.toConsumer(new RepositoryInitializer()::accept, new OfflineInterceptor()));
     }
 
-    static Optional<Context> getApplication() {
+    static Optional<Application> getApplication() {
         return Chain.optional(applicationWeakReference)
                 .map(WeakReference::get);
     }

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">OWMApp</string>
+    <string name="activity_main_search_city_hint">Search for city</string>
 </resources>

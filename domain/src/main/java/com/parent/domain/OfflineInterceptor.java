@@ -7,7 +7,7 @@ import java.io.IOException;
 import okhttp3.Interceptor;
 import okhttp3.Response;
 
-class RewriteCacheControlInterceptor implements Interceptor {
+class OfflineInterceptor implements Interceptor {
 
     @Override
     public Response intercept(@NonNull Chain chain) throws IOException {
