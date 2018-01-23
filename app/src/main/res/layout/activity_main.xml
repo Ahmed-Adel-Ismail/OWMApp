@@ -41,13 +41,12 @@
         android:layout_marginEnd="16dp"
         android:layout_marginTop="12dp"
         android:text="@string/activity_main_add_city_button"
-        app:layout_constraintBottom_toBottomOf="@+id/main_activity_saved_cities_scroll_view"
+        app:layout_constraintBottom_toTopOf="@+id/frameLayout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/main_activity_search_city_text_view"
-        app:layout_constraintVertical_bias="0.0"/>
+        app:layout_constraintTop_toBottomOf="@+id/main_activity_search_city_text_view"/>
 
-    <ScrollView
-        android:id="@+id/main_activity_saved_cities_scroll_view"
+    <FrameLayout
+        android:id="@+id/frameLayout"
         android:layout_width="368dp"
         android:layout_height="332dp"
         android:layout_marginBottom="8dp"
@@ -57,10 +56,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <LinearLayout
+        <android.support.v7.widget.RecyclerView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"/>
-    </ScrollView>
+            android:layout_height="match_parent"/>
+    </FrameLayout>
 
 </android.support.constraint.ConstraintLayout>
