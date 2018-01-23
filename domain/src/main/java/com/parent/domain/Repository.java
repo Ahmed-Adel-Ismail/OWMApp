@@ -9,6 +9,7 @@ import com.actors.Actor;
 import com.actors.Message;
 import com.annotations.Command;
 import com.annotations.CommandsMapFactory;
+import com.chaining.Optional;
 import com.mapper.CommandsMap;
 import com.parent.entities.City;
 
@@ -27,38 +28,39 @@ import static com.parent.domain.Domain.MSG_SEARCH_FOR_CITY;
 @CommandsMapFactory
 public class Repository implements Actor {
 
-    private final FiveDayForecastRequester fiveDayForecastRequester;
-    private final Function<String, List<City>> citySearcher;
+    private final OnRequestFiveDayForecast onRequestFiveDayForecast;
+    private final OnSearchForCity onSearchForCity;
+
     private final CommandsMap commandsMap;
     private final Scheduler scheduler;
 
     @SuppressLint("RestrictedApi")
     Repository(FiveDayForecastRequester fiveDayForecastRequester,
-               Function<String, List<City>> citySearcher) {
+               Function<String, Optional<City>> citySearcher) {
         this(fiveDayForecastRequester, citySearcher, Schedulers.io());
     }
 
     @RestrictTo(TESTS)
     Repository(FiveDayForecastRequester fiveDayForecastRequester,
-               Function<String, List<City>> citySearcher,
+               Function<String, Optional<City>> citySearcher,
                Scheduler scheduler) {
 
-        this.scheduler = scheduler;
-        this.citySearcher = citySearcher;
-        this.fiveDayForecastRequester = fiveDayForecastRequester;
         this.commandsMap = CommandsMap.of(this);
+        this.scheduler = scheduler;
+        this.onRequestFiveDayForecast = new OnRequestFiveDayForecast(fiveDayForecastRequester, scheduler);
+        this.onSearchForCity = new OnSearchForCity(citySearcher, scheduler);
     }
 
 
     @Command(MSG_REQUEST_FIVE_DAY_FORECAST)
     void onRequestFiveDayForecast(Pair<Long, Class<?>> forecastData) {
-        new OnRequestFiveDayForecast(fiveDayForecastRequester, scheduler).accept(forecastData);
+        onRequestFiveDayForecast.accept(forecastData);
     }
 
 
     @Command(MSG_SEARCH_FOR_CITY)
     void onSearchForCity(Pair<String, Class<?>> searchData) {
-        new OnSearchForCity(citySearcher, scheduler).accept(searchData);
+        onSearchForCity.accept(searchData);
     }
 
     @Override

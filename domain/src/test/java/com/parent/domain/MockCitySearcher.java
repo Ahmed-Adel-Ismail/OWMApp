@@ -12,11 +12,9 @@ import java.nio.charset.StandardCharsets;
 
 class MockCitySearcher extends CitySearcher {
 
-    static final String SEARCH_FOR_MULTIPLE_RESULTS_TEXT = "n";
-    static final int SEARCH_FOR_MULTIPLE_RESULTS_COUNT = 3;
-
-    static final String SEARCH_FOR_SINGLE_RESULT_TEXT = "hu";
-    static final int SEARCH_FOR_SINGLE_RESULT_COUNT = 1;
+    static final String SEARCH_FOR_INVALID_RESULTS_TEXT = "x$$$xl";
+    static final String SEARCH_FOR_VALID_RESULTS_TEXT = "hurzuf";
+    static final Long SEARCH_FOR_VALID_RESULTS_ID = 707860L;
 
     private static final String JSON_FILE = "[{" +
             "    \"id\": 707860," +

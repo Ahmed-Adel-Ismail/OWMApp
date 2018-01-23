@@ -3,6 +3,8 @@ package com.parent.domain;
 import android.content.ContextWrapper;
 import android.support.annotation.NonNull;
 
+import com.chaining.Chain;
+import com.chaining.Optional;
 import com.functional.curry.SwapCurry;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -17,19 +19,24 @@ import java.util.List;
 import io.reactivex.functions.Function;
 
 
-class CitySearcher implements Function<String, List<City>> {
+class CitySearcher implements Function<String, Optional<City>> {
+
+    private boolean searching;
 
     @SuppressWarnings("TryFinallyCanBeTryWithResources")
     @Override
-    public List<City> apply(@NonNull String cityName) throws Exception {
-        List<City> results = new LinkedList<>();
+    public Optional<City> apply(@NonNull String cityName) throws Exception {
+        searching = false;
+        LinkedList<City> results = new LinkedList<>();
         JsonReader reader = createJsonReader();
         try {
             searchInFile(cityName, results, reader);
         } finally {
             reader.close();
         }
-        return results;
+        return Chain.optional(results)
+                .whenNot(List::isEmpty)
+                .thenMap(LinkedList::pop);
     }
 
     private void searchInFile(@NonNull String cityName, List<City> results, JsonReader reader)
@@ -37,22 +44,28 @@ class CitySearcher implements Function<String, List<City>> {
 
         Gson gson = new GsonBuilder().create();
         reader.beginArray();
+        searching = true;
         while (reader.hasNext()) {
-            searchByCityName(cityName, results, reader, gson);
+            if (!searching) throw new StopCitySearchException();
+            if (searchByCityName(cityName, results, reader, gson)) return;
         }
     }
 
-    private void searchByCityName(@NonNull String cityName, List<City> results,
-                                  JsonReader reader, Gson gson) {
+    private boolean searchByCityName(@NonNull String cityName, List<City> results,
+                                     JsonReader reader, Gson gson) {
         City city = gson.fromJson(reader, City.class);
-        if (isCityNameMatching(cityName, city)) {
+        if (isSameCityName(cityName, city)) {
             results.add(city);
+            return true;
+        } else {
+            return false;
         }
+
     }
 
-    private boolean isCityNameMatching(@NonNull String cityName, City city) {
+    private boolean isSameCityName(@NonNull String cityName, City city) {
         return !cityName.trim().isEmpty()
-                && city.getName().toLowerCase().contains(cityName.trim().toLowerCase());
+                && city.getName().trim().equalsIgnoreCase(cityName.trim());
     }
 
     protected JsonReader createJsonReader() {
