@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.ProgressBar;
 
 import com.actors.Actor;
 import com.actors.Message;
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements Actor {
     @BindView(R.id.main_activity_search_city_text_view)
     AutoCompleteTextView searchTextView;
     @BindView(R.id.main_activity_search_city_progress)
-    AutoCompleteTextView searchProgress;
+    ProgressBar searchProgress;
     private Binder<MainViewModel> binder;
 
     @Override
