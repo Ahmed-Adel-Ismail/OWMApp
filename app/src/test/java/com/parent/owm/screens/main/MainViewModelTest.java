@@ -33,7 +33,7 @@ public class MainViewModelTest {
         }
 
         viewModel.searchCityText.onNext("test");
-        viewModel.searchForCity.set(true);
+        viewModel.searchForCity.onNext(true);
         scheduler.triggerActions();
 
         assertTrue(result[0]);
@@ -55,7 +55,7 @@ public class MainViewModelTest {
         }
 
         viewModel.searchCityText.onNext("");
-        viewModel.searchForCity.set(true);
+        viewModel.searchForCity.onNext(true);
         scheduler.triggerActions();
 
         assertFalse(result[0]);
@@ -72,7 +72,7 @@ public class MainViewModelTest {
 
         scheduler.triggerActions();
 
-        viewModel.searchForCity.set(true);
+        viewModel.searchForCity.onNext(true);
         scheduler.triggerActions();
 
         viewModel.onSearchForCityResult(Chain.optional(mockCity()));
@@ -92,7 +92,7 @@ public class MainViewModelTest {
 
         scheduler.triggerActions();
 
-        viewModel.searchForCity.set(true);
+        viewModel.searchForCity.onNext(true);
         scheduler.triggerActions();
 
         viewModel.onSearchForCityResult(Chain.optional(null));

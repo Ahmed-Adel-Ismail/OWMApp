@@ -1,11 +1,8 @@
 package com.parent.owm.screens.main;
 
 import android.annotation.SuppressLint;
-import android.arch.lifecycle.ViewModel;
-import android.support.annotation.NonNull;
 import android.support.annotation.RestrictTo;
 
-import com.actors.Actor;
 import com.actors.ActorSystem;
 import com.actors.Message;
 import com.annotations.Command;
@@ -14,11 +11,11 @@ import com.chaining.Chain;
 import com.chaining.Optional;
 import com.functional.curry.Curry;
 import com.functional.curry.SwapCurry;
-import com.mapper.CommandsMap;
 import com.parent.domain.Domain;
 import com.parent.domain.FavoriteCities;
 import com.parent.domain.Repository;
 import com.parent.entities.City;
+import com.parent.owm.abstraction.BaseViewModel;
 import com.vodafone.binding.annotations.SubscriptionName;
 
 import org.javatuples.Pair;
@@ -31,11 +28,14 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.PublishSubject;
 
+import static android.support.annotation.RestrictTo.Scope.SUBCLASSES;
 import static android.support.annotation.RestrictTo.Scope.TESTS;
 import static com.parent.domain.Domain.MSG_SEARCH_FOR_CITY_RESULT;
 
 @CommandsMapFactory
-public class MainViewModel extends ViewModel implements Actor {
+public class MainViewModel extends BaseViewModel {
+
+    static final int MSG_REMOVE_CITY = 0x101;
 
     @SubscriptionName("searchCityText")
     final BehaviorSubject<String> searchCityText = BehaviorSubject.createDefault("");
@@ -48,10 +48,6 @@ public class MainViewModel extends ViewModel implements Actor {
     @SubscriptionName("favoriteCities")
     final BehaviorSubject<LinkedList<City>> favoriteCities = BehaviorSubject.createDefault(new LinkedList<>());
 
-
-    private final CommandsMap commandsMap = CommandsMap.of(this);
-    private final Scheduler scheduler;
-
     @SuppressLint("RestrictedApi")
     public MainViewModel() {
         this(Schedulers.computation());
@@ -59,13 +55,13 @@ public class MainViewModel extends ViewModel implements Actor {
 
     @RestrictTo(TESTS)
     MainViewModel(Scheduler scheduler) {
-        this.scheduler = scheduler;
-        ActorSystem.register(this);
-        loadFavoriteCities();
-        sendRepositoryMessageAndShowProgressOnSearchForCity();
+        super(scheduler);
+        loadFavoriteCitiesFromPreferences();
+        sendRepositoryMessageAndShowProgressOnSearchForCity(scheduler);
     }
 
-    private void loadFavoriteCities() {
+    @RestrictTo(SUBCLASSES)
+    protected void loadFavoriteCitiesFromPreferences() {
         FavoriteCities.load()
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
@@ -74,7 +70,7 @@ public class MainViewModel extends ViewModel implements Actor {
                 .subscribe(favoriteCities::onNext);
     }
 
-    private void sendRepositoryMessageAndShowProgressOnSearchForCity() {
+    private void sendRepositoryMessageAndShowProgressOnSearchForCity(Scheduler scheduler) {
         searchForCity.share()
                 .map(trigger -> searchCityText.getValue())
                 .filter(text -> !text.trim().isEmpty())
@@ -87,6 +83,16 @@ public class MainViewModel extends ViewModel implements Actor {
                 .subscribe(searchCityInProgress::onNext);
     }
 
+
+    @Command(MSG_REMOVE_CITY)
+    void removeCityAndSaveToPreferences(City city) {
+        Chain.let(favoriteCities)
+                .map(BehaviorSubject::getValue)
+                .apply(list -> list.remove(city))
+                .apply(favoriteCities::onNext)
+                .apply(this::saveToPreferences);
+    }
+
     @Command(MSG_SEARCH_FOR_CITY_RESULT)
     void onSearchForCityResult(Optional<City> foundCity) {
         foundCity.map(this::addNewFavoriteCityAndSaveToPreferences)
@@ -97,7 +103,7 @@ public class MainViewModel extends ViewModel implements Actor {
     }
 
     private boolean addNewFavoriteCityAndSaveToPreferences(City city) {
-        Chain.let(favoriteCities.getValue())
+        return Chain.let(favoriteCities.getValue())
                 .apply(list -> list.addFirst(city))
                 .flatMap(Observable::fromIterable)
                 .distinct(City::getId)
@@ -106,32 +112,27 @@ public class MainViewModel extends ViewModel implements Actor {
                 .map(Chain::let)
                 .blockingGet()
                 .apply(favoriteCities::onNext)
-                .flatMap(FavoriteCities::save)
+                .map(this::saveToPreferences)
+                .call();
+    }
+
+    @RestrictTo(SUBCLASSES)
+    protected boolean saveToPreferences(LinkedList<City> cities) {
+        FavoriteCities.save(cities)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
                 .subscribe();
         return true;
-
     }
 
-    @Override
-    public void onMessageReceived(Message message) {
-        commandsMap.execute(message.getId(), message.getContent());
-    }
 
-    @NonNull
-    @Override
-    public Scheduler observeOnScheduler() {
-        return scheduler;
-    }
-
-    void clear() {
+    public void clear() {
         searchCityText.onComplete();
         searchCityInProgress.onComplete();
         searchForCity.onComplete();
         searchForCityFailure.onComplete();
         favoriteCities.onComplete();
-        ActorSystem.unregister(this);
+        super.clear();
     }
 
 }

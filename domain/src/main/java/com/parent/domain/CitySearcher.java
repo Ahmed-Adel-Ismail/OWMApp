@@ -2,6 +2,7 @@ package com.parent.domain;
 
 import android.content.ContextWrapper;
 import android.support.annotation.NonNull;
+import android.support.annotation.RestrictTo;
 
 import com.chaining.Chain;
 import com.chaining.Optional;
@@ -17,6 +18,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import io.reactivex.functions.Function;
+
+import static android.support.annotation.RestrictTo.Scope.SUBCLASSES;
 
 
 class CitySearcher implements Function<String, Optional<City>> {
@@ -68,6 +71,7 @@ class CitySearcher implements Function<String, Optional<City>> {
                 && city.getName().trim().equalsIgnoreCase(cityName.trim());
     }
 
+    @RestrictTo(SUBCLASSES)
     protected JsonReader createJsonReader() {
         return Domain.getApplication()
                 .map(ContextWrapper::getResources)

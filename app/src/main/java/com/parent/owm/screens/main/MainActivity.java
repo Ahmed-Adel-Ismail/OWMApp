@@ -1,36 +1,30 @@
 package com.parent.owm.screens.main;
 
-import android.arch.lifecycle.ViewModelProviders;
-import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import android.content.Intent;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.actors.Actor;
-import com.actors.Message;
+import com.annotations.Command;
 import com.annotations.CommandsMapFactory;
 import com.chaining.Chain;
 import com.functional.curry.Curry;
 import com.jakewharton.rxbinding2.widget.RxTextView;
-import com.mapper.CommandsMap;
 import com.parent.entities.City;
 import com.parent.owm.R;
+import com.parent.owm.abstraction.BaseActivity;
 import com.parent.owm.annotations.LayoutId;
-import com.vodafone.binding.Binder;
+import com.parent.owm.screens.forecast.ForecastActivity;
 import com.vodafone.binding.annotations.SubscribeTo;
 import com.vodafone.binding.annotations.SubscriptionsFactory;
 
 import java.util.LinkedList;
-import java.util.List;
 
 import butterknife.BindView;
 import io.reactivex.Observable;
-import io.reactivex.Scheduler;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
@@ -40,29 +34,23 @@ import io.reactivex.subjects.Subject;
 
 import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
+import static com.parent.owm.screens.forecast.ForecastActivity.EXTRA_KEY_CITY_ID;
 
+@CommandsMapFactory
 @LayoutId(R.layout.activity_main)
 @SubscriptionsFactory(MainViewModel.class)
-@CommandsMapFactory
-public class MainActivity extends AppCompatActivity implements Actor {
+public class MainActivity extends BaseActivity<MainViewModel> {
 
-    private final CommandsMap commandsMap = CommandsMap.of(this);
+    static final int MSG_SHOW_FORECAST = 0x301;
+
     @BindView(R.id.main_activity_search_city_text_view)
     EditText searchTextView;
     @BindView(R.id.main_activity_search_city_progress)
     ProgressBar searchProgress;
     @BindView(R.id.main_activity_add_city_button)
     Button addButton;
-    private Binder<MainViewModel> binder;
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        binder = Chain.let(MainViewModel.class)
-                .map(ViewModelProviders.of(this)::get)
-                .map(Binder.bind(this)::<MainViewModel>to)
-                .call();
-    }
+    @BindView(R.id.main_activity_favorite_cities_recycler_view)
+    RecyclerView favoriteCitiesRecyclerView;
 
 
     @SubscribeTo("searchCityInProgress")
@@ -102,32 +90,21 @@ public class MainActivity extends AppCompatActivity implements Actor {
     }
 
     @SubscribeTo("favoriteCities")
-    void onSavedCitiesChanged(BehaviorSubject<LinkedList<City>> favoriteCities) {
-        favoriteCities.share()
-                .map(List::toString)
-                .subscribe(Curry.toConsumer(Log::e, "MainActivity"));
+    Disposable onSavedCitiesChanged(BehaviorSubject<LinkedList<City>> favoriteCities) {
+        return Chain.let(favoriteCitiesRecyclerView)
+                .apply(view -> view.setLayoutManager(new LinearLayoutManager(this)))
+                .map(FavoriteCitiesAdapter::withView)
+                .map(adapter -> adapter.bindTo(favoriteCities))
+                .call();
+    }
 
+    @Command(MSG_SHOW_FORECAST)
+    void showForecast(City city) {
+        Chain.let(ForecastActivity.class)
+                .map(Curry.toFunction(Intent::new, this))
+                .apply(intent -> intent.putExtra(EXTRA_KEY_CITY_ID, city.getId()))
+                .apply(this::startActivity);
     }
 
 
-    @Override
-    public void onMessageReceived(Message message) {
-        commandsMap.execute(message.getId(), message.getContent());
-    }
-
-    @NonNull
-    @Override
-    public Scheduler observeOnScheduler() {
-        return AndroidSchedulers.mainThread();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Chain.optional(binder)
-                .apply(Binder::unbind)
-                .map(Binder::getSubscriptionsFactory)
-                .when(binder -> isFinishing())
-                .then(MainViewModel::clear);
-    }
 }
