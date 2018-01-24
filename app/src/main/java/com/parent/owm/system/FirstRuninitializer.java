@@ -2,6 +2,7 @@ package com.parent.owm.system;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 
 import com.chaining.Chain;
 import com.parent.domain.FavoriteCities;
@@ -23,7 +24,8 @@ class FirstRuninitializer implements Consumer<Context> {
         Chain.let(context.getSharedPreferences(PREFERENCES_NAME, MODE_PRIVATE))
                 .whenNot(preferences -> preferences.getBoolean(KEY_INITIALIZED, false))
                 .thenMap(SharedPreferences::edit)
-                .apply(editor -> editor.putBoolean(KEY_INITIALIZED, true))
+                .map(editor -> editor.putBoolean(KEY_INITIALIZED, true))
+                .apply(Editor::apply)
                 .map(editor -> FavoriteCities.save(FavoriteCities.defaultList()))
                 .apply(Completable::blockingAwait);
     }

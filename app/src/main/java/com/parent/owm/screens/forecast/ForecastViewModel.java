@@ -10,8 +10,10 @@ import com.actors.Message;
 import com.annotations.Command;
 import com.annotations.CommandsMapFactory;
 import com.chaining.Chain;
+import com.chaining.Guard;
 import com.functional.curry.Curry;
 import com.functional.curry.SwapCurry;
+import com.parent.domain.NetworkAvailable;
 import com.parent.domain.Repository;
 import com.parent.entities.ForecastSummery;
 import com.parent.owm.abstraction.BaseViewModel;
@@ -36,6 +38,7 @@ import static com.parent.domain.Domain.MSG_REQUEST_FIVE_DAY_FORECAST_SUCCESS;
 public class ForecastViewModel extends BaseViewModel {
 
     private static final long RETRY_AFTER_MILLIS = 8000;
+    private static final String NETWORK_ERROR = "No network available";
 
     @SubscriptionName("cityId")
     final BehaviorSubject<Long> cityId = BehaviorSubject.create();
@@ -84,8 +87,13 @@ public class ForecastViewModel extends BaseViewModel {
 
     @Command(MSG_REQUEST_FIVE_DAY_FORECAST_FAILURE)
     void onRequestForecastFailure(Throwable throwable) {
-        retryAfterErrorMessage.onNext(throwable.getMessage());
-        retryCancellable = Chain.let(RETRY_AFTER_MILLIS)
+        retryCancellable = Guard.call(new NetworkAvailable())
+                .onErrorReturnItem(true)
+                .whenNot(Boolean::booleanValue)
+                .invoke(() -> retryAfterErrorMessage.onNext(NETWORK_ERROR))
+                .when(Boolean::booleanValue)
+                .invoke(() -> retryAfterErrorMessage.onNext(throwable.getMessage()))
+                .to(RETRY_AFTER_MILLIS)
                 .map(ActorScheduler::after)
                 .map(scheduler -> scheduler.send(requestForecastMessage(), Repository.class))
                 .call();
@@ -96,7 +104,7 @@ public class ForecastViewModel extends BaseViewModel {
     public void clear() {
         cityId.onComplete();
         requestInProgress.onComplete();
-
+        forecastsResponse.onComplete();
         Chain.optional(retryCancellable)
                 .map(Cancellable::cancel)
                 .whenNot(Disposable::isDisposed)

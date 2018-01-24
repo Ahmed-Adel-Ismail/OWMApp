@@ -6,7 +6,7 @@ import android.net.NetworkInfo;
 
 import java.util.concurrent.Callable;
 
-class NetworkAvailable implements Callable<Boolean> {
+public class NetworkAvailable implements Callable<Boolean> {
 
     @Override
     public Boolean call() {
