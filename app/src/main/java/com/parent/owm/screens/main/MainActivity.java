@@ -3,8 +3,10 @@ package com.parent.owm.screens.main;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -71,7 +73,20 @@ public class MainActivity extends BaseActivity<MainViewModel> {
     @SubscribeTo("searchForCity")
     void onAddButtonClicked(PublishSubject<Boolean> searchForCity) {
         addButton.setOnClickListener(view -> searchForCity.onNext(true));
+        searchTextView.setOnKeyListener(searchForCityOnEnterKey(searchForCity));
     }
+
+    @NonNull
+    private View.OnKeyListener searchForCityOnEnterKey(PublishSubject<Boolean> searchForCity) {
+        return (view, keyCode, event) ->
+                Chain.let(event.getAction() == KeyEvent.ACTION_DOWN)
+                        .and(keyCode == KeyEvent.KEYCODE_ENTER)
+                        .reduce((leftBoolean, rightBoolean) -> leftBoolean && rightBoolean)
+                        .when(Boolean::booleanValue)
+                        .then(searchForCity::onNext)
+                        .call();
+    }
+
 
     @SubscribeTo("searchForCity")
     Disposable hideKeyboardOnSearchForCity(PublishSubject<Boolean> searchForCity) {
