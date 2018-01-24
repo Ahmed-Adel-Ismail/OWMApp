@@ -1,8 +1,5 @@
 package com.parent.owm.screens.forecast;
 
-import android.annotation.SuppressLint;
-import android.support.annotation.RestrictTo;
-
 import com.actors.ActorScheduler;
 import com.actors.ActorSystem;
 import com.actors.Cancellable;
@@ -23,13 +20,11 @@ import org.javatuples.Pair;
 
 import java.util.List;
 
-import io.reactivex.Scheduler;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.PublishSubject;
 
-import static android.support.annotation.RestrictTo.Scope.TESTS;
 import static com.parent.domain.Domain.MSG_REQUEST_FIVE_DAY_FORECAST;
 import static com.parent.domain.Domain.MSG_REQUEST_FIVE_DAY_FORECAST_FAILURE;
 import static com.parent.domain.Domain.MSG_REQUEST_FIVE_DAY_FORECAST_SUCCESS;
@@ -48,20 +43,13 @@ public class ForecastViewModel extends BaseViewModel {
     final BehaviorSubject<Boolean> requestInProgress = BehaviorSubject.createDefault(false);
     @SubscriptionName("retryAfterErrorMessage")
     final PublishSubject<String> retryAfterErrorMessage = PublishSubject.create();
-
-
     private Cancellable retryCancellable;
 
-    @SuppressLint("RestrictedApi")
     public ForecastViewModel() {
-        this(Schedulers.computation());
-    }
-
-    @RestrictTo(TESTS)
-    private ForecastViewModel(Scheduler scheduler) {
-        super(scheduler);
+        super(Schedulers.computation());
         requestCityForecastIfNotRequesting();
     }
+
 
     private void requestCityForecastIfNotRequesting() {
         cityId.share()
