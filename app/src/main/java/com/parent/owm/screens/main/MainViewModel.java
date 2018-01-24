@@ -28,7 +28,6 @@ import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 import io.reactivex.subjects.PublishSubject;
 
-import static android.support.annotation.RestrictTo.Scope.SUBCLASSES;
 import static android.support.annotation.RestrictTo.Scope.TESTS;
 import static com.parent.domain.Domain.MSG_SEARCH_FOR_CITY_RESULT;
 
@@ -60,8 +59,7 @@ public class MainViewModel extends BaseViewModel {
         sendRepositoryMessageAndShowProgressOnSearchForCity(scheduler);
     }
 
-    @RestrictTo(SUBCLASSES)
-    protected void loadFavoriteCitiesFromPreferences() {
+    private void loadFavoriteCitiesFromPreferences() {
         FavoriteCities.load()
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
@@ -116,8 +114,7 @@ public class MainViewModel extends BaseViewModel {
                 .call();
     }
 
-    @RestrictTo(SUBCLASSES)
-    protected boolean saveToPreferences(LinkedList<City> cities) {
+    private boolean saveToPreferences(LinkedList<City> cities) {
         FavoriteCities.save(cities)
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
