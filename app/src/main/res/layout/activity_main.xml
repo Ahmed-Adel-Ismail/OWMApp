@@ -18,6 +18,7 @@
             android:layout_height="60dp"
             android:layout_margin="16dp"
             android:ems="8"
+            android:singleLine="true"
             android:hint="@string/activity_main_search_city_hint"
             android:lines="1"/>
 

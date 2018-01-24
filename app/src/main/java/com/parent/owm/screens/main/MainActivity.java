@@ -1,8 +1,12 @@
 package com.parent.owm.screens.main;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.os.IBinder;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -67,6 +71,28 @@ public class MainActivity extends BaseActivity<MainViewModel> {
     @SubscribeTo("searchForCity")
     void onAddButtonClicked(PublishSubject<Boolean> searchForCity) {
         addButton.setOnClickListener(view -> searchForCity.onNext(true));
+    }
+
+    @SubscribeTo("searchForCity")
+    Disposable hideKeyboardOnSearchForCity(PublishSubject<Boolean> searchForCity) {
+        return searchForCity.share()
+                .observeOn(AndroidSchedulers.mainThread())
+                .map(trigger -> this)
+                .subscribe(this::hideKeyboard);
+    }
+
+    private void hideKeyboard(Activity activity) {
+        Chain.let(INPUT_METHOD_SERVICE)
+                .map(activity::getSystemService)
+                .map(object -> (InputMethodManager) object)
+                .apply(manager -> manager.hideSoftInputFromWindow(windowToken(activity), 0));
+    }
+
+    private IBinder windowToken(Activity activity) {
+        return Chain.optional(activity.getCurrentFocus())
+                .defaultIfEmpty(new View(activity))
+                .map(View::getWindowToken)
+                .call();
     }
 
     @SubscribeTo("searchForCityFailure")
