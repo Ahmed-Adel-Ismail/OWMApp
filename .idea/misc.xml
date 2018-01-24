@@ -9,6 +9,9 @@
       <item index="4" class="java.lang.String" itemvalue="com.vodafone.binding.annotations.SubscriptionName" />
       <item index="5" class="java.lang.String" itemvalue="retrofit2.http.GET" />
     </list>
+    <writeAnnotations>
+      <writeAnnotation name="com.parent.owm.annotations.IntentExtra" />
+    </writeAnnotations>
   </component>
   <component name="MarkdownProjectSettings">
     <PreviewSettings splitEditorLayout="SPLIT" splitEditorPreview="PREVIEW" useGrayscaleRendering="false" zoomFactor="1.25" maxImageWidth="0" showGitHubPageIfSynced="false" allowBrowsingInPreview="false" synchronizePreviewPosition="true" highlightPreviewType="NONE" highlightFadeOut="5" highlightOnTyping="true" synchronizeSourcePosition="true" verticallyAlignSourceAndPreviewSyncPosition="true" showSearchHighlightsInPreview="false" showSelectionInPreview="true">

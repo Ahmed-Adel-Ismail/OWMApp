@@ -27,7 +27,7 @@ class RepositoryInitializer implements BiConsumer<Interceptor, Context> {
     public void accept(Interceptor offlineInterceptor, Context context) {
         Chain.let(offlineInterceptor)
                 .map(Curry.toFunction(this::okHttpClient, cache(context)))
-                .map(this::openWeatherMapsApi)
+                .map(this::fiveDayForecastRequester)
                 .map(SwapCurry.toFunction(Repository::new, new CitySearcher()))
                 .apply(ActorSystem::register);
     }
@@ -40,15 +40,15 @@ class RepositoryInitializer implements BiConsumer<Interceptor, Context> {
                 .call();
     }
 
-    private OkHttpClient okHttpClient(Cache cache, Interceptor interceptor) {
+    private OkHttpClient okHttpClient(Cache cache, Interceptor offlineInterceptor) {
         return new OkHttpClient.Builder()
-                .addInterceptor(interceptor)
+                .addInterceptor(offlineInterceptor)
                 .addInterceptor(new AppKeyInterceptor())
                 .cache(cache)
                 .build();
     }
 
-    private FiveDayForecastRequester openWeatherMapsApi(OkHttpClient client) {
+    private FiveDayForecastRequester fiveDayForecastRequester(OkHttpClient client) {
         return new Retrofit.Builder()
                 .baseUrl(OPEN_WEATHER_MAPS_BASE_URL)
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

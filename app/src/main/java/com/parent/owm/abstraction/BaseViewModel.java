@@ -5,6 +5,7 @@ import android.support.annotation.CallSuper;
 import android.support.annotation.NonNull;
 
 import com.actors.Actor;
+import com.actors.ActorScheduler;
 import com.actors.ActorSystem;
 import com.actors.Message;
 import com.mapper.CommandsMap;
@@ -38,5 +39,6 @@ public abstract class BaseViewModel extends ViewModel implements Clearable, Acto
     public void clear() {
         commandsMap.clear();
         ActorSystem.unregister(this);
+        ActorScheduler.cancel(getClass());
     }
 }

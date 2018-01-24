@@ -5,4 +5,11 @@
     <string name="activity_main_add_city_button">Add</string>
     <string name="view_favorite_city_remove">Remove</string>
     <string name="view_favorite_city_forecast">Show</string>
+    <string name="activity_forecast_retry_error_message">Retrying after failure : </string>
+    <string name="view_forecast_item_date_label">Date</string>
+    <string name="view_forecast_item_cloudiness_label">Cloudiness</string>
+    <string name="view_forecast_item_humidity_label">Humidity</string>
+    <string name="view_forecast_item_temperature_label">Temperature</string>
+    <string name="view_forecast_item_weather_label">Weather</string>
+    <string name="view_forecast_item_wind_speed_label">Wind speed</string>
 </resources>

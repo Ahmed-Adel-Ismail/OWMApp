@@ -58,7 +58,7 @@ public class MainActivity extends BaseActivity<MainViewModel> {
 
 
     @SubscribeTo("searchCityInProgress")
-    Disposable onSearchCityInProgressChanged(Subject<Boolean> searchCityInProgress) {
+    Disposable onSearchCityInProgressUpdated(Subject<Boolean> searchCityInProgress) {
         return searchCityInProgress
                 .share()
                 .map(searching -> searching ? VISIBLE : INVISIBLE)
@@ -107,7 +107,7 @@ public class MainActivity extends BaseActivity<MainViewModel> {
     }
 
     @SubscribeTo("searchCityText")
-    Disposable onSearchCityTextChanged(BehaviorSubject<String> searchCityText) {
+    Disposable onSearchCityTextUpdated(BehaviorSubject<String> searchCityText) {
         searchTextView.setText(searchCityText.getValue());
         return RxTextView.textChanges(searchTextView)
                 .map(Object::toString)
@@ -116,7 +116,7 @@ public class MainActivity extends BaseActivity<MainViewModel> {
     }
 
     @SubscribeTo("favoriteCities")
-    Disposable onSavedCitiesChanged(BehaviorSubject<LinkedList<City>> favoriteCities) {
+    Disposable onFavoriteCitiesUpdated(BehaviorSubject<LinkedList<City>> favoriteCities) {
         return Chain.let(favoriteCitiesRecyclerView)
                 .apply(view -> view.setLayoutManager(new LinearLayoutManager(this)))
                 .map(FavoriteCitiesAdapter::withView)

@@ -5,31 +5,35 @@ import android.support.annotation.NonNull;
 import java.io.IOException;
 
 import okhttp3.Interceptor;
+import okhttp3.Request;
 import okhttp3.Response;
 
 class OfflineInterceptor implements Interceptor {
 
     @Override
     public Response intercept(@NonNull Chain chain) throws IOException {
-        Response originalResponse = chain.proceed(chain.request());
+        Request request = chain.request();
         if (new NetworkAvailable().call()) {
-            return readFromCacheForFifteenMinutes(originalResponse);
+            request = readFromCacheForFifteenMinutes(request);
         } else {
-            return readFromCacheForFiveDays(originalResponse);
+            request = readFromCacheForFiveDays(request);
         }
+        return chain.proceed(request);
     }
 
-    private Response readFromCacheForFifteenMinutes(Response originalResponse) {
+    private Request readFromCacheForFifteenMinutes(Request request) {
         int maxAgeFifteenMinutes = 60 * 15;
-        return originalResponse.newBuilder()
+        return request.newBuilder()
                 .header("Cache-Control", "public, max-age=" + maxAgeFifteenMinutes)
                 .build();
     }
 
-    private Response readFromCacheForFiveDays(Response originalResponse) {
+    private Request readFromCacheForFiveDays(Request request) {
         int maxStaleFiveDays = 60 * 60 * 24 * 5;
-        return originalResponse.newBuilder()
+        return request.newBuilder()
                 .header("Cache-Control", "public, only-if-cached, max-stale=" + maxStaleFiveDays)
                 .build();
     }
+
+
 }

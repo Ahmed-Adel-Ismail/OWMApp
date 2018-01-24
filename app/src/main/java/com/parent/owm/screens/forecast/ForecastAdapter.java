@@ -1,4 +1,4 @@
-package com.parent.owm.screens.main;
+package com.parent.owm.screens.forecast;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -6,9 +6,8 @@ import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
 import com.chaining.Chain;
-import com.parent.entities.City;
+import com.parent.entities.ForecastSummery;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -16,23 +15,23 @@ import io.reactivex.disposables.Disposable;
 import io.reactivex.schedulers.Schedulers;
 import io.reactivex.subjects.BehaviorSubject;
 
-import static com.parent.owm.R.layout.view_favorite_city;
+import static com.parent.owm.R.layout.view_forecast_item;
 
-class FavoriteCitiesAdapter extends RecyclerView.Adapter<FavoriteCitiesViewHolder> {
+public class ForecastAdapter extends RecyclerView.Adapter<ForecastViewHolder> {
 
-    private final BehaviorSubject<LinkedList<City>> favoriteCities;
+    private final BehaviorSubject<List<ForecastSummery>> forecastSummaries;
     private Disposable disposable;
 
-    private FavoriteCitiesAdapter(BehaviorSubject<LinkedList<City>> favoriteCities) {
-        this.favoriteCities = favoriteCities;
-        this.disposable = notifyDataSetChangedOnFavoritesChange(favoriteCities);
+    private ForecastAdapter(BehaviorSubject<List<ForecastSummery>> forecastSummaries) {
+        this.forecastSummaries = forecastSummaries;
+        this.disposable = notifyDataSetChangedOnFavoritesChange(forecastSummaries);
     }
 
     @NonNull
     private Disposable notifyDataSetChangedOnFavoritesChange(
-            BehaviorSubject<LinkedList<City>> favoriteCities) {
+            BehaviorSubject<List<ForecastSummery>> forecastSummaries) {
 
-        return favoriteCities.share()
+        return forecastSummaries.share()
                 .subscribeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(list -> notifyDataSetChanged());
@@ -43,18 +42,18 @@ class FavoriteCitiesAdapter extends RecyclerView.Adapter<FavoriteCitiesViewHolde
     }
 
     @Override
-    public FavoriteCitiesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ForecastViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         return Chain.let(parent)
                 .map(ViewGroup::getContext)
                 .map(LayoutInflater::from)
-                .map(inflater -> inflater.inflate(view_favorite_city, parent, false))
-                .map(FavoriteCitiesViewHolder::new)
+                .map(inflater -> inflater.inflate(view_forecast_item, parent, false))
+                .map(ForecastViewHolder::new)
                 .call();
     }
 
     @Override
-    public void onBindViewHolder(FavoriteCitiesViewHolder holder, int position) {
-        Chain.let(favoriteCities)
+    public void onBindViewHolder(ForecastViewHolder holder, int position) {
+        Chain.let(forecastSummaries)
                 .map(BehaviorSubject::getValue)
                 .map(list -> list.get(position))
                 .apply(holder::invalidate);
@@ -62,7 +61,7 @@ class FavoriteCitiesAdapter extends RecyclerView.Adapter<FavoriteCitiesViewHolde
 
     @Override
     public int getItemCount() {
-        return Chain.optional(favoriteCities)
+        return Chain.optional(forecastSummaries)
                 .map(BehaviorSubject::getValue)
                 .map(List::size)
                 .defaultIfEmpty(0)
@@ -78,8 +77,8 @@ class FavoriteCitiesAdapter extends RecyclerView.Adapter<FavoriteCitiesViewHolde
             this.recyclerView = recyclerView;
         }
 
-        Disposable bindTo(BehaviorSubject<LinkedList<City>> favoriteCities) {
-            FavoriteCitiesAdapter adapter = new FavoriteCitiesAdapter(favoriteCities);
+        Disposable bindTo(BehaviorSubject<List<ForecastSummery>> forecastSummaries) {
+            ForecastAdapter adapter = new ForecastAdapter(forecastSummaries);
             recyclerView.setAdapter(adapter);
             return adapter.disposable;
         }

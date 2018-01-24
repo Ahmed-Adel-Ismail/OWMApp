@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="4dp"
+    android:elevation="2dp">
+
+    <TableRow>
+
+        <TextView
+            android:text="@string/view_forecast_item_date_label"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:id="@+id/view_forecast_item_date"
+            android:textColor="@color/colorAccent"
+            android:textStyle="bold"
+            tools:text="2018-01-24 06:00:00"/>
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:text="@string/view_forecast_item_cloudiness_label"/>
+
+        <TextView
+            android:id="@+id/view_forecast_item_cloudiness"
+            tools:text="92%"/>
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:text="@string/view_forecast_item_humidity_label"/>
+
+        <TextView
+            android:id="@+id/view_forecast_item_humidity"
+            tools:text="85%"/>
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:text="@string/view_forecast_item_temperature_label"/>
+
+        <TextView
+            android:id="@+id/view_forecast_item_temperature"
+            tools:text="273.94 F"/>
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:text="@string/view_forecast_item_weather_label"/>
+
+        <TextView
+            android:id="@+id/view_forecast_item_weather"
+            tools:text="light rain"/>
+    </TableRow>
+
+    <TableRow>
+
+        <TextView
+            android:layout_width="107dp"
+            android:text="@string/view_forecast_item_wind_speed_label"/>
+
+        <TextView
+            android:id="@+id/view_forecast_item_wind_speed"
+            tools:text="5.21 Km"/>
+    </TableRow>
+
+
+</TableLayout>
