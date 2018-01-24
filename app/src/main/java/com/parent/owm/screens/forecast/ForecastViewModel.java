@@ -96,7 +96,7 @@ public class ForecastViewModel extends BaseViewModel {
     public void clear() {
         cityId.onComplete();
         requestInProgress.onComplete();
-
+        forecastsResponse.onComplete();
         Chain.optional(retryCancellable)
                 .map(Cancellable::cancel)
                 .whenNot(Disposable::isDisposed)
