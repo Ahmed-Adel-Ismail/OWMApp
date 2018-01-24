@@ -1,2 +1,2 @@
 # OWMApp
-Sample Application for working with Open Weather Maps
+Sample MVVM Application for working with Open Weather Maps
