@@ -13,7 +13,7 @@ public class App extends Application {
         super.onCreate();
         Chain.let(this)
                 .apply(Domain::integrateWith)
-                .apply(new FirstRuninitializer()::accept)
+                .apply(new FirstRunInitializer()::accept)
                 .apply(app -> app.registerActivityLifecycleCallbacks(new ActivitiesLifeCycleCallback()));
     }
 }

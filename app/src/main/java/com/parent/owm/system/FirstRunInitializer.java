@@ -13,7 +13,7 @@ import io.reactivex.functions.Consumer;
 import static android.content.Context.MODE_PRIVATE;
 
 
-class FirstRuninitializer implements Consumer<Context> {
+class FirstRunInitializer implements Consumer<Context> {
 
     private static final String PREFERENCES_NAME = "SystemPreferences";
     private static final String KEY_INITIALIZED = "com.parent.owm.system.KEY_INITIALIZED";
