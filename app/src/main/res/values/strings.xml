@@ -4,5 +4,5 @@
     <string name="activity_main_search_failed_toast">Failed to find this city</string>
     <string name="activity_main_add_city_button">Add</string>
     <string name="view_favorite_city_remove">Remove</string>
-    <string name="view_favorite_city_forecast">Forecast</string>
+    <string name="view_favorite_city_forecast">Show</string>
 </resources>
