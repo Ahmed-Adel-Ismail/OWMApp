@@ -17,7 +17,7 @@ import io.reactivex.subjects.BehaviorSubject;
 
 import static com.parent.owm.R.layout.view_forecast_item;
 
-public class ForecastAdapter extends RecyclerView.Adapter<ForecastViewHolder> {
+class ForecastAdapter extends RecyclerView.Adapter<ForecastViewHolder> {
 
     private final BehaviorSubject<List<ForecastSummery>> forecastSummaries;
     private Disposable disposable;

@@ -3,9 +3,11 @@ package com.parent.domain;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
+import com.chaining.Chain;
 import com.functional.curry.SwapCurry;
 import com.google.gson.Gson;
 import com.parent.entities.City;
+import com.parent.entities.Coordinates;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.NoSuchElementException;
 
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
+import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.SingleObserver;
 
@@ -25,6 +28,15 @@ public class FavoriteCities {
 
     private FavoriteCities() {
 
+    }
+
+    public static LinkedList<City> defaultList() {
+        return Chain.let(new Coordinates(-0.12574D, 51.50853D))
+                .map(coordinates -> new City(2643743L, "London", "GB", coordinates))
+                .collect(City.class)
+                .flatMap(Observable::fromIterable)
+                .toList(LinkedList::new)
+                .blockingGet();
     }
 
     public static Saver save(LinkedList<City> cities) {
