@@ -6,6 +6,7 @@ import com.actors.Cancellable;
 import com.actors.Message;
 import com.annotations.Command;
 import com.annotations.CommandsMapFactory;
+import com.binding.annotations.SubscriptionName;
 import com.chaining.Chain;
 import com.chaining.Guard;
 import com.functional.curry.Curry;
@@ -14,7 +15,6 @@ import com.parent.domain.NetworkAvailable;
 import com.parent.domain.Repository;
 import com.parent.entities.ForecastSummery;
 import com.parent.owm.abstraction.BaseViewModel;
-import com.vodafone.binding.annotations.SubscriptionName;
 
 import org.javatuples.Pair;
 
@@ -89,7 +89,7 @@ public class ForecastViewModel extends BaseViewModel {
     }
 
     @Override
-    public void clear() {
+    public void onCleared() {
         cityId.onComplete();
         requestInProgress.onComplete();
         forecastsResponse.onComplete();
@@ -98,6 +98,6 @@ public class ForecastViewModel extends BaseViewModel {
                 .whenNot(Disposable::isDisposed)
                 .then(Disposable::dispose);
 
-        super.clear();
+        super.onCleared();
     }
 }

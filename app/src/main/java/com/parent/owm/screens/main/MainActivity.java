@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.KeyEvent;
@@ -16,16 +17,15 @@ import android.widget.Toast;
 
 import com.annotations.Command;
 import com.annotations.CommandsMapFactory;
+import com.binding.annotations.SubscribeTo;
+import com.binding.annotations.SubscriptionsFactory;
 import com.chaining.Chain;
 import com.functional.curry.Curry;
 import com.jakewharton.rxbinding2.widget.RxTextView;
 import com.parent.entities.City;
 import com.parent.owm.R;
-import com.parent.owm.abstraction.BaseActivity;
 import com.parent.owm.annotations.LayoutId;
 import com.parent.owm.screens.forecast.ForecastActivity;
-import com.vodafone.binding.annotations.SubscribeTo;
-import com.vodafone.binding.annotations.SubscriptionsFactory;
 
 import java.util.LinkedList;
 
@@ -45,7 +45,7 @@ import static com.parent.owm.screens.forecast.ForecastActivity.EXTRA_KEY_CITY_ID
 @CommandsMapFactory
 @LayoutId(R.layout.activity_main)
 @SubscriptionsFactory(MainViewModel.class)
-public class MainActivity extends BaseActivity<MainViewModel> {
+public class MainActivity extends AppCompatActivity {
 
     static final int MSG_SHOW_FORECAST = 0x301;
 

@@ -13,7 +13,7 @@ import com.mapper.CommandsMap;
 import io.reactivex.Scheduler;
 
 
-public abstract class BaseViewModel extends ViewModel implements Clearable, Actor {
+public abstract class BaseViewModel extends ViewModel implements Actor {
 
     private final Scheduler scheduler;
     private final CommandsMap commandsMap = CommandsMap.of(this);
@@ -36,7 +36,7 @@ public abstract class BaseViewModel extends ViewModel implements Clearable, Acto
 
     @Override
     @CallSuper
-    public void clear() {
+    public void onCleared() {
         commandsMap.clear();
         ActorSystem.unregister(this);
         ActorScheduler.cancel(getClass());

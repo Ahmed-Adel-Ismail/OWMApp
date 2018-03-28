@@ -1,19 +1,19 @@
 package com.parent.owm.screens.forecast;
 
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.annotations.CommandsMapFactory;
+import com.binding.annotations.SubscribeTo;
+import com.binding.annotations.SubscriptionsFactory;
 import com.chaining.Chain;
 import com.parent.entities.ForecastSummery;
 import com.parent.owm.R;
-import com.parent.owm.abstraction.BaseActivity;
 import com.parent.owm.annotations.IntentExtra;
 import com.parent.owm.annotations.LayoutId;
-import com.vodafone.binding.annotations.SubscribeTo;
-import com.vodafone.binding.annotations.SubscriptionsFactory;
 
 import java.util.List;
 
@@ -31,7 +31,7 @@ import static android.view.View.VISIBLE;
 @LayoutId(R.layout.activity_forecast)
 @SubscriptionsFactory(ForecastViewModel.class)
 @CommandsMapFactory
-public class ForecastActivity extends BaseActivity<ForecastViewModel> {
+public class ForecastActivity extends AppCompatActivity {
 
     public static final String EXTRA_KEY_CITY_ID = "com.parent.owm.screens.forecast.EXTRA_KEY_CITY_ID";
 

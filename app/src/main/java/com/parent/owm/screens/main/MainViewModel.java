@@ -7,6 +7,7 @@ import com.actors.ActorSystem;
 import com.actors.Message;
 import com.annotations.Command;
 import com.annotations.CommandsMapFactory;
+import com.binding.annotations.SubscriptionName;
 import com.chaining.Chain;
 import com.chaining.Optional;
 import com.functional.curry.Curry;
@@ -16,7 +17,6 @@ import com.parent.domain.FavoriteCities;
 import com.parent.domain.Repository;
 import com.parent.entities.City;
 import com.parent.owm.abstraction.BaseViewModel;
-import com.vodafone.binding.annotations.SubscriptionName;
 
 import org.javatuples.Pair;
 
@@ -123,13 +123,13 @@ public class MainViewModel extends BaseViewModel {
     }
 
 
-    public void clear() {
+    public void onCleared() {
         searchCityText.onComplete();
         searchCityInProgress.onComplete();
         searchForCity.onComplete();
         searchForCityFailure.onComplete();
         favoriteCities.onComplete();
-        super.clear();
+        super.onCleared();
     }
 
 }
