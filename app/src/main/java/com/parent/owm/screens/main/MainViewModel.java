@@ -16,7 +16,7 @@ import com.parent.domain.Domain;
 import com.parent.domain.FavoriteCities;
 import com.parent.domain.Repository;
 import com.parent.entities.City;
-import com.parent.owm.abstraction.BaseViewModel;
+import com.parent.owm.abstraction.ActorViewModel;
 
 import org.javatuples.Pair;
 
@@ -32,7 +32,7 @@ import static android.support.annotation.RestrictTo.Scope.TESTS;
 import static com.parent.domain.Domain.MSG_SEARCH_FOR_CITY_RESULT;
 
 @CommandsMapFactory
-public class MainViewModel extends BaseViewModel {
+public class MainViewModel extends ActorViewModel {
 
     static final int MSG_REMOVE_CITY = 0x101;
 

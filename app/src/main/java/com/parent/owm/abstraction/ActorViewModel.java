@@ -13,12 +13,12 @@ import com.mapper.CommandsMap;
 import io.reactivex.Scheduler;
 
 
-public abstract class BaseViewModel extends ViewModel implements Actor {
+public abstract class ActorViewModel extends ViewModel implements Actor {
 
     private final Scheduler scheduler;
     private final CommandsMap commandsMap = CommandsMap.of(this);
 
-    protected BaseViewModel(Scheduler scheduler) {
+    protected ActorViewModel(Scheduler scheduler) {
         this.scheduler = scheduler;
         ActorSystem.register(this);
     }

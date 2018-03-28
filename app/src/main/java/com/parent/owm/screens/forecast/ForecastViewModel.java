@@ -14,7 +14,7 @@ import com.functional.curry.SwapCurry;
 import com.parent.domain.NetworkAvailable;
 import com.parent.domain.Repository;
 import com.parent.entities.ForecastSummery;
-import com.parent.owm.abstraction.BaseViewModel;
+import com.parent.owm.abstraction.ActorViewModel;
 
 import org.javatuples.Pair;
 
@@ -30,7 +30,7 @@ import static com.parent.domain.Domain.MSG_REQUEST_FIVE_DAY_FORECAST_FAILURE;
 import static com.parent.domain.Domain.MSG_REQUEST_FIVE_DAY_FORECAST_SUCCESS;
 
 @CommandsMapFactory
-public class ForecastViewModel extends BaseViewModel {
+public class ForecastViewModel extends ActorViewModel {
 
     private static final long RETRY_AFTER_MILLIS = 8000;
     private static final String NETWORK_ERROR = "No network available";
